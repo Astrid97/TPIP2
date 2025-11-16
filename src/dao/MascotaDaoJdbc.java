@@ -15,6 +15,8 @@ import java.util.*;
  */
 public class MascotaDaoJdbc implements GenericDao<Mascota> {
 
+    private final MicrochipDaoJdbc microchipDao = new MicrochipDaoJdbc();
+
     @Override
     public Mascota crear(Mascota m) {
         try (Connection c = DatabaseConnection.getConnection()) {
@@ -50,7 +52,7 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
 
     @Override
     public Optional<Mascota> leer(long id) {
-        String sql = "SELECT * FROM mascota WHERE id = ?";
+        String sql = "SELECT m.*, m.microchip_id FROM mascota m WHERE m.id = ? AND eliminado = FALSE";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -63,6 +65,10 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
                     m.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
                     m.setDuenio(rs.getString("duenio"));
                     m.setEliminado(rs.getBoolean("eliminado"));
+                    Long microchipId = rs.getLong("microchip_id");
+                    if (microchipId != 0) {
+                        microchipDao.leer(microchipId).ifPresent(m::setMicrochip);
+                    }
                     return Optional.of(m);
                 }
             }
@@ -75,7 +81,7 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
     @Override
     public List<Mascota> leerTodos() {
         List<Mascota> lista = new ArrayList<>();
-        String sql = "SELECT * FROM mascota";
+        String sql = "SELECT m.*, m.microchip_id FROM mascota m WHERE eliminado = FALSE";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Mascota m = new Mascota();
@@ -86,6 +92,11 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
                 m.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
                 m.setDuenio(rs.getString("duenio"));
                 m.setEliminado(rs.getBoolean("eliminado"));
+                Long microchipId = rs.getLong("microchip_id");
+                if (microchipId != 0) {
+                    microchipDao.leer(microchipId).ifPresent(m::setMicrochip);
+                }
+
                 lista.add(m);
             }
         } catch (SQLException e) {
@@ -139,7 +150,7 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
     // Métodos con Connection
     @Override
     public Optional<Mascota> leer(long id, Connection c) {
-        String sql = "SELECT * FROM mascota WHERE id = ?";
+        String sql = "SELECT * FROM mascota WHERE id = ? AND eliminado = FALSE";
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -152,6 +163,10 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
                     m.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
                     m.setDuenio(rs.getString("duenio"));
                     m.setEliminado(rs.getBoolean("eliminado"));
+                    Long microchipId = rs.getLong("microchip_id");
+                    if (microchipId != 0) {
+                        microchipDao.leer(microchipId).ifPresent(m::setMicrochip);
+                    }
                     return Optional.of(m);
                 }
             }
@@ -175,6 +190,10 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
                 m.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
                 m.setDuenio(rs.getString("duenio"));
                 m.setEliminado(rs.getBoolean("eliminado"));
+                Long microchipId = rs.getLong("microchip_id");
+                if (microchipId != 0) {
+                    microchipDao.leer(microchipId).ifPresent(m::setMicrochip);
+                }
                 lista.add(m);
             }
         } catch (SQLException e) {
