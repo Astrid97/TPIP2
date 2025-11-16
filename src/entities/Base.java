@@ -1,7 +1,4 @@
-
 package entities;
-
-public class Entities {
 
 /**
  * Clase base abstracta para todas las entidades del sistema.
@@ -15,11 +12,12 @@ public class Entities {
  * Patrón de diseño: Template (clase base abstracta)
  */
 public abstract class Base {
+
     /**
      * Identificador único de la entidad.
      * Generado automáticamente por la base de datos (AUTO_INCREMENT).
      */
-    private int id;
+    private Long id;
 
     /**
      * Flag de eliminación lógica.
@@ -37,7 +35,7 @@ public abstract class Base {
      * @param id Identificador de la entidad
      * @param eliminado Estado de eliminación
      */
-    protected Base(int id, boolean eliminado) {
+    protected Base(Long id, boolean eliminado) {
         this.id = id;
         this.eliminado = eliminado;
     }
@@ -51,41 +49,23 @@ public abstract class Base {
         this.eliminado = false;
     }
 
-    /**
-     * Obtiene el ID de la entidad.
-     * @return ID de la entidad, 0 si aún no ha sido persistida
-     */
-    public int getId() {
+    /** Obtiene el ID de la entidad. */
+    public Long getId() {
         return id;
     }
 
-    /**
-     * Establece el ID de la entidad.
-     * Típicamente llamado por el DAO después de insertar en la BD.
-     *
-     * @param id Nuevo ID de la entidad
-     */
-    public void setId(int id) {
+    /** Establece el ID de la entidad (típicamente desde el DAO). */
+    public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * Verifica si la entidad está marcada como eliminada.
-     * @return true si está eliminada, false si está activa
-     */
+    /** ¿Está marcada como eliminada? (soft delete) */
     public boolean isEliminado() {
         return eliminado;
     }
 
-    /**
-     * Marca o desmarca la entidad como eliminada.
-     * En el contexto del soft delete, esto se usa para "eliminar" sin borrar físicamente.
-     *
-     * @param eliminado true para marcar como eliminada, false para reactivar
-     */
+    /** Marca o desmarca la entidad como eliminada. */
     public void setEliminado(boolean eliminado) {
         this.eliminado = eliminado;
     }
-}
-    
 }

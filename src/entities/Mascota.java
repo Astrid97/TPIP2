@@ -1,48 +1,39 @@
-
 package entities;
 
 import java.time.LocalDate;
 
-public class Mascota {
-    
-    private Long id; 
-    private boolean eliminado; 
-    private String nombre; 
-    private String especie; 
-    private String raza; 
-    private LocalDate fechaNacimiento; 
-    private String duenio; 
+public class Mascota extends Base {
+
+    private String nombre;
+    private String especie;
+    private String raza;
+    private LocalDate fechaNacimiento;
+    private String duenio;
     private Microchip microchip;
-    
-    public Mascota() {} 
-    
-    public Mascota(Long id, String nombre, String especie, String raza, LocalDate fechaNacimiento, String duenio, Microchip microchip, boolean eliminado) { 
-        
-        this.id = id; 
-        this.nombre = nombre; 
-        this.especie = especie; 
-        this.raza = raza; 
+
+    public Mascota() {
+        super(); // Base() => eliminado = false
+    }
+
+    public Mascota(Long id,
+                   String nombre,
+                   String especie,
+                   String raza,
+                   LocalDate fechaNacimiento,
+                   String duenio,
+                   Microchip microchip,
+                   boolean eliminado) {
+
+        super(id, eliminado); // setea id y eliminado en la clase base
+        this.nombre = nombre;
+        this.especie = especie;
+        this.raza = raza;
         this.fechaNacimiento = fechaNacimiento;
-        this.duenio = duenio; 
-        this.microchip = microchip; 
-        this.eliminado = eliminado; 
+        this.duenio = duenio;
+        this.microchip = microchip;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public boolean isEliminado() {
-        return eliminado;
-    }
-
-    public void setEliminado(boolean eliminado) {
-        this.eliminado = eliminado;
-    }
+    // Ya NO van ni id ni eliminado (se heredan de Base)
 
     public String getNombre() {
         return nombre;
@@ -62,8 +53,8 @@ public class Mascota {
     public void setEspecie(String especie) {
         if (especie == null || especie.isBlank()) {
             throw new IllegalArgumentException("La especie no puede estar vacía");
-            }
-         this.especie = especie.trim();
+        }
+        this.especie = especie.trim();
     }
 
     public String getRaza() {
@@ -73,7 +64,7 @@ public class Mascota {
     public void setRaza(String raza) {
         if (raza == null || raza.isBlank()) {
             throw new IllegalArgumentException("La raza no puede estar vacía");
-            }
+        }
         this.raza = raza.trim();
     }
 
@@ -84,7 +75,7 @@ public class Mascota {
     public void setFechaNacimiento(LocalDate fechaNacimiento) {
         if (fechaNacimiento != null && fechaNacimiento.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("La fecha de nacimiento no puede ser futura");
-            }
+        }
         this.fechaNacimiento = fechaNacimiento;
     }
 
@@ -95,7 +86,7 @@ public class Mascota {
     public void setDuenio(String duenio) {
         if (duenio == null || duenio.isBlank()) {
             throw new IllegalArgumentException("La mascota debe tener un duenio");
-            }
+        }
         this.duenio = duenio.trim();
     }
 
@@ -109,8 +100,15 @@ public class Mascota {
 
     @Override
     public String toString() {
-        return "Mascota{" + "Id = " + id + ", Eliminado = " + eliminado + ", Nombre = " + nombre + ", Especie = " + especie + ", Raza = " + raza + ", Fecha Nacimiento = " + fechaNacimiento + ", Duenio = " + duenio + ", Microchip = " + microchip + '}';
+        return "Mascota{" +
+                "Id = " + getId() +
+                ", Eliminado = " + isEliminado() +
+                ", Nombre = " + nombre +
+                ", Especie = " + especie +
+                ", Raza = " + raza +
+                ", Fecha Nacimiento = " + fechaNacimiento +
+                ", Duenio = " + duenio +
+                ", Microchip = " + microchip +
+                '}';
     }
-    
-    
 }
