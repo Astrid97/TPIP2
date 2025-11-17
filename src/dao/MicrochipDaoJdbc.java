@@ -51,7 +51,7 @@ public class MicrochipDaoJdbc implements GenericDao<Microchip> {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // para ver el error real en consola
+            e.printStackTrace();
             throw new RuntimeException("Error al leer microchip: " + e.getMessage(), e);
         }
         return Optional.empty();

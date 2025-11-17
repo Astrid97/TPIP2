@@ -78,28 +78,25 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
         }
         return Optional.empty();
     }
-    
 
     @Override
     public List<Mascota> leerTodos() {
         List<Mascota> lista = new ArrayList<>();
 
-        String sql =
-            "SELECT m.id, m.nombre, m.especie, m.raza, m.fecha_nacimiento, " +
-            "       m.duenio, m.eliminado, m.microchip_id, " +
-            "       mc.id              AS mc_id, " +
-            "       mc.eliminado       AS mc_eliminado, " +
-            "       mc.codigo          AS mc_codigo, " +
-            "       mc.fecha_implantacion AS mc_fecha_implantacion, " +
-            "       mc.veterinaria     AS mc_veterinaria, " +
-            "       mc.observaciones   AS mc_observaciones " +
-            "FROM mascota m " +
-            "LEFT JOIN microchip mc ON mc.id = m.microchip_id " +
-            "WHERE m.eliminado = FALSE";
+        String sql
+                = "SELECT m.id, m.nombre, m.especie, m.raza, m.fecha_nacimiento, "
+                + "       m.duenio, m.eliminado, m.microchip_id, "
+                + "       mc.id              AS mc_id, "
+                + "       mc.eliminado       AS mc_eliminado, "
+                + "       mc.codigo          AS mc_codigo, "
+                + "       mc.fecha_implantacion AS mc_fecha_implantacion, "
+                + "       mc.veterinaria     AS mc_veterinaria, "
+                + "       mc.observaciones   AS mc_observaciones "
+                + "FROM mascota m "
+                + "LEFT JOIN microchip mc ON mc.id = m.microchip_id "
+                + "WHERE m.eliminado = FALSE";
 
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Mascota m = new Mascota();
@@ -122,7 +119,6 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
                     mc.setCodigo(rs.getString("mc_codigo"));
                     mc.setFechaImplantacion(rs.getDate("mc_fecha_implantacion").toLocalDate());
 
-
                     mc.setVeterinaria(rs.getString("mc_veterinaria"));
                     mc.setObservaciones(rs.getString("mc_observaciones"));
 
@@ -139,8 +135,6 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
         return lista;
     }
 
-    
-    
     @Override
     public void actualizar(Mascota m) {
         String sql = "UPDATE mascota SET nombre=?, especie=?, raza=?, fecha_nacimiento=?, duenio=?, eliminado=? WHERE id=?";
@@ -160,12 +154,8 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
 
     @Override
     public void eliminar(long id) {
-        String sql = "UPDATE mascota SET eliminado = TRUE WHERE id=?";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-
-            ps.setLong(1, id);
-            ps.executeUpdate();
-
+        try (Connection c = DatabaseConnection.getConnection()) {
+            eliminar(id, c);
         } catch (SQLException e) {
             throw new RuntimeException("Error al eliminar mascota", e);
         }
@@ -240,6 +230,17 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
 
     @Override
     public void eliminar(long id, Connection c) {
+        // Primero obtenemos la mascota para ver si tiene microchip
+        Optional<Mascota> opt = leer(id, c);
+        if (opt.isPresent()) {
+            Mascota m = opt.get();
+            // Si tiene microchip, eliminarlo también
+            if (m.getMicrochip() != null) {
+                microchipDao.eliminar(m.getMicrochip().getId(), c);
+            }
+        }
+
+        // Ahora eliminamos la mascota
         String sql = "UPDATE mascota SET eliminado = TRUE WHERE id=?";
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, id);
