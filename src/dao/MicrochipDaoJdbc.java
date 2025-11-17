@@ -41,7 +41,7 @@ public class MicrochipDaoJdbc implements GenericDao<Microchip> {
 
     @Override
     public Optional<Microchip> leer(long id) {
-        String sql = "SELECT * FROM microchip WHERE id = ?";
+        String sql = "SELECT * FROM microchip WHERE id = ? AND eliminado = FALSE";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -60,7 +60,7 @@ public class MicrochipDaoJdbc implements GenericDao<Microchip> {
     @Override
     public List<Microchip> leerTodos() {
         List<Microchip> lista = new ArrayList<>();
-        String sql = "SELECT * FROM microchip";
+        String sql = "SELECT * FROM microchip AND eliminado = FALSE";
         try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 lista.add(mapearResultSet(rs));
@@ -142,7 +142,7 @@ public class MicrochipDaoJdbc implements GenericDao<Microchip> {
 
     @Override
     public Optional<Microchip> leer(long id, Connection c) {
-        String sql = "SELECT * FROM microchip WHERE id = ?";
+        String sql = "SELECT * FROM microchip WHERE id = ? AND eliminado = FALSE";
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -159,7 +159,7 @@ public class MicrochipDaoJdbc implements GenericDao<Microchip> {
     @Override
     public List<Microchip> leerTodos(Connection c) {
         List<Microchip> lista = new ArrayList<>();
-        String sql = "SELECT * FROM microchip";
+        String sql = "SELECT * FROM microchip AND eliminado = FALSE";
         try (PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 lista.add(mapearResultSet(rs));
