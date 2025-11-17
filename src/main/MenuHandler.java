@@ -117,9 +117,19 @@ public class MenuHandler {
                         ", Nombre: " + m.getNombre() +
                         ", Especie: " + m.getEspecie() +
                         ", Raza: " + m.getRaza() +
-                        ", Dueño: " + m.getDuenio());
+                        ", Dueño: " + m.getDuenio()+
+                        ", Eliminado: " + m.isEliminado() 
+                ); 
                 if (m.getMicrochip() != null) {
-                    System.out.print(", Microchip: " + m.getMicrochip().getCodigo());
+                    System.out.println(" Microchip ID: " + m.getMicrochip().getId() +
+                            ", Código: " + m.getMicrochip().getCodigo() +
+                            ", Fecha de Implatación: " + m.getMicrochip().getFechaImplantacion() +
+                            ", Veterinaria: " + m.getMicrochip().getVeterinaria() +
+                            ", Observaciones: " + m.getMicrochip().getObservaciones() +
+                            ", Eliminado: " + m.getMicrochip().isEliminado() 
+                    );
+                } else {
+                    System.out.println("Microchip: no asignado");
                 }
                 System.out.println();
             }

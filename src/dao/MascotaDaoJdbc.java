@@ -6,6 +6,7 @@ package dao;
 
 import config.DatabaseConnection;
 import entities.Mascota;
+import entities.Microchip;
 import java.sql.*;
 import java.util.*;
 
@@ -77,34 +78,69 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
         }
         return Optional.empty();
     }
+    
 
     @Override
     public List<Mascota> leerTodos() {
         List<Mascota> lista = new ArrayList<>();
-        String sql = "SELECT m.*, m.microchip_id FROM mascota m WHERE eliminado = FALSE";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+        String sql =
+            "SELECT m.id, m.nombre, m.especie, m.raza, m.fecha_nacimiento, " +
+            "       m.duenio, m.eliminado, m.microchip_id, " +
+            "       mc.id              AS mc_id, " +
+            "       mc.eliminado       AS mc_eliminado, " +
+            "       mc.codigo          AS mc_codigo, " +
+            "       mc.fecha_implantacion AS mc_fecha_implantacion, " +
+            "       mc.veterinaria     AS mc_veterinaria, " +
+            "       mc.observaciones   AS mc_observaciones " +
+            "FROM mascota m " +
+            "LEFT JOIN microchip mc ON mc.id = m.microchip_id " +
+            "WHERE m.eliminado = FALSE";
+
+        try (Connection c = DatabaseConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
                 Mascota m = new Mascota();
                 m.setId(rs.getLong("id"));
                 m.setNombre(rs.getString("nombre"));
                 m.setEspecie(rs.getString("especie"));
                 m.setRaza(rs.getString("raza"));
+
                 m.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
+
                 m.setDuenio(rs.getString("duenio"));
                 m.setEliminado(rs.getBoolean("eliminado"));
-                Long microchipId = rs.getLong("microchip_id");
-                if (microchipId != 0) {
-                    microchipDao.leer(microchipId).ifPresent(m::setMicrochip);
+
+                // Microchip (puede ser null)
+                long mcId = rs.getLong("mc_id");
+                if (!rs.wasNull()) {
+                    Microchip mc = new Microchip();
+                    mc.setId(mcId);
+                    mc.setEliminado(rs.getBoolean("mc_eliminado"));
+                    mc.setCodigo(rs.getString("mc_codigo"));
+                    mc.setFechaImplantacion(rs.getDate("mc_fecha_implantacion").toLocalDate());
+
+
+                    mc.setVeterinaria(rs.getString("mc_veterinaria"));
+                    mc.setObservaciones(rs.getString("mc_observaciones"));
+
+                    m.setMicrochip(mc);
                 }
 
                 lista.add(m);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new RuntimeException("Error al listar mascotas", e);
         }
+
         return lista;
     }
 
+    
+    
     @Override
     public void actualizar(Mascota m) {
         String sql = "UPDATE mascota SET nombre=?, especie=?, raza=?, fecha_nacimiento=?, duenio=?, eliminado=? WHERE id=?";

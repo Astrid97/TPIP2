@@ -51,7 +51,8 @@ public class MicrochipDaoJdbc implements GenericDao<Microchip> {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error al leer microchip", e);
+            e.printStackTrace(); // para ver el error real en consola
+            throw new RuntimeException("Error al leer microchip: " + e.getMessage(), e);
         }
         return Optional.empty();
     }
@@ -180,7 +181,7 @@ public class MicrochipDaoJdbc implements GenericDao<Microchip> {
     }
 
     // Método auxiliar para mapear ResultSet a objeto
-    private Microchip mapearResultSet(ResultSet rs) throws SQLException {
+    /*private Microchip mapearResultSet(ResultSet rs) throws SQLException {
         Microchip m = new Microchip();
         m.setId(rs.getLong("id"));
         m.setCodigo(rs.getString("codigo"));
@@ -189,5 +190,26 @@ public class MicrochipDaoJdbc implements GenericDao<Microchip> {
         m.setObservaciones(rs.getString("observaciones"));
         m.setEliminado(rs.getBoolean("eliminado"));
         return m;
+    }*/
+    private Microchip mapearResultSet(ResultSet rs) throws SQLException {
+        Microchip m = new Microchip();
+
+        // columnas según tu tabla: id, eliminado, codigo, fecha_implantacion, veterinaria, observaciones
+        m.setId(rs.getLong("id"));
+
+        // eliminado: si es TINYINT(1) 0/1
+        m.setEliminado(rs.getBoolean("eliminado"));
+
+        m.setCodigo(rs.getString("codigo"));
+
+        m.setFechaImplantacion(rs.getDate("fecha_implantacion").toLocalDate());
+
+        m.setVeterinaria(rs.getString("veterinaria"));
+
+        // NULL acá no tiene problema, getString devuelve null
+        m.setObservaciones(rs.getString("observaciones"));
+
+        return m;
     }
+
 }
