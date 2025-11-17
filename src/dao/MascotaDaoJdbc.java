@@ -29,7 +29,7 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
 
     @Override
     public Mascota crear(Mascota m, Connection c) {
-        String sql = "INSERT INTO mascota (nombre, especie, raza, fecha_nacimiento, duenio, eliminado) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO mascota (nombre, especie, raza, fecha_nacimiento, duenio, eliminado, microchip_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, m.getNombre());
             ps.setString(2, m.getEspecie());
@@ -37,6 +37,7 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
             ps.setDate(4, java.sql.Date.valueOf(m.getFechaNacimiento()));
             ps.setString(5, m.getDuenio());
             ps.setBoolean(6, m.isEliminado());
+            ps.setLong(7, m.getMicrochip().getId());
             ps.executeUpdate();
 
             // Obtener el ID generado

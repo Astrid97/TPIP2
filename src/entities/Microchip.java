@@ -34,6 +34,10 @@ public class Microchip extends Base {
             super.setId(id);
         }
     }
+    
+    public Long getId(){
+        return super.getId();
+    }
 
     public String getCodigo() {
         return codigo;
