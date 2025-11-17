@@ -100,18 +100,6 @@ public class MicrochipDaoJdbc implements GenericDao<Microchip> {
         }
     }
 
-    public void recuperar(long id) {
-        String sql = "UPDATE microchip SET eliminado = FALSE WHERE id=?";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-
-            ps.setLong(1, id);
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al recuperar microchip", e);
-        }
-    }
-
     // Métodos con Connection
     @Override
     public void actualizar(Microchip m, Connection c) {
@@ -170,27 +158,6 @@ public class MicrochipDaoJdbc implements GenericDao<Microchip> {
         return lista;
     }
 
-    public void recuperar(long id, Connection c) {
-        String sql = "UPDATE microchip SET eliminado = FALSE WHERE id=?";
-        try (PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setLong(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al recuperar microchip (transaccional)", e);
-        }
-    }
-
-    // Método auxiliar para mapear ResultSet a objeto
-    /*private Microchip mapearResultSet(ResultSet rs) throws SQLException {
-        Microchip m = new Microchip();
-        m.setId(rs.getLong("id"));
-        m.setCodigo(rs.getString("codigo"));
-        m.setFechaImplantacion(rs.getDate("fecha_implantacion").toLocalDate());
-        m.setVeterinaria(rs.getString("veterinaria"));
-        m.setObservaciones(rs.getString("observaciones"));
-        m.setEliminado(rs.getBoolean("eliminado"));
-        return m;
-    }*/
     private Microchip mapearResultSet(ResultSet rs) throws SQLException {
         Microchip m = new Microchip();
 

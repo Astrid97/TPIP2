@@ -162,18 +162,6 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
         }
     }
 
-    public void recuperar(long id) {
-        String sql = "UPDATE mascota SET eliminado = FALSE WHERE id=?";
-        try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
-
-            ps.setLong(1, id);
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al recuperar mascota", e);
-        }
-    }
-
     // Métodos con Connection
     @Override
     public Optional<Mascota> leer(long id, Connection c) {
@@ -266,16 +254,6 @@ public class MascotaDaoJdbc implements GenericDao<Mascota> {
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error al actualizar mascota (transaccional)", e);
-        }
-    }
-
-    public void recuperar(long id, Connection c) {
-        String sql = "UPDATE mascota SET eliminado = FALSE WHERE id=?";
-        try (PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setLong(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al recuperar mascota (transaccional)", e);
         }
     }
 }
